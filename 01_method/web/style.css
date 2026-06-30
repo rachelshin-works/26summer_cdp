@@ -1,0 +1,114 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+:root {
+  --base-size: 20px;
+  --spacing: 8px;
+  /* --font-large: 2rem;
+	--font-medium: 1rem; */
+}
+
+.cossette-texte-regular {
+  font-family: "Cossette Texte", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.cossette-texte-bold {
+  font-family: "Cossette Texte", sans-serif;
+  font-weight: 700;
+  font-style: normal;
+}
+
+h1,
+p,
+a {
+  font-family: "Cossette Texte", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 1rem;
+  text-decoration: none;
+  color: black;
+}
+
+.container-wrapper {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.bilbiography_container {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  margin-top: 1rem;
+  margin-left: 2rem;
+  min-height: calc(100vh - 1rem);
+  overflow: hidden;
+}
+
+.by_autor,
+.by_others {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.by_author {
+  max-width: 36rem;
+}
+
+.by_others {
+  max-width: 36rem;
+  margin-left: 2rem;
+}
+
+.link {
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 1rem);
+  max-width: 200px;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
+.container .menu {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin-top: 1rem;
+}
+
+.footer {
+  margin-top: auto;
+  margin-bottom: 1rem;
+}
+
+.footer p {
+  font-size: 0.75rem;
+}
+
+.line {
+  width: 1px;
+  min-height: 100vh;
+  margin-left: 3rem;
+  flex-shrink: 0;
+  background-color: black;
+}
