@@ -6,10 +6,16 @@
 
 html,
 body {
+  width: 100%;
   height: 100%;
   display: flex;
   flex-direction: row;
   overflow: hidden;
+}
+
+body {
+  flex: 1;
+  min-width: 0;
 }
 :root {
   --base-size: 20px;
@@ -42,9 +48,312 @@ a {
 }
 
 .container-wrapper {
+  flex: 1;
   display: flex;
+  width: 100%;
+  height: 100%;
   min-height: 100vh;
+  min-width: 0;
   overflow: hidden;
+}
+
+.diagram_container {
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  margin-left: 2rem;
+}
+
+.diagram-title {
+  display: block;
+  width: calc(100% - 3rem);
+  height: auto;
+  flex-shrink: 0;
+  margin-top: 1rem;
+  margin-right: 3rem;
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.diagram-fit {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-top: 0;
+}
+
+.diagram-indicator {
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
+  width: 12rem;
+  height: auto;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.diagram-stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1173px;
+  height: 1024px;
+  transform-origin: 0 0;
+  background: #fff;
+}
+
+.d-band {
+  position: absolute;
+  pointer-events: none;
+  border-top: 1px solid #000;
+  box-sizing: border-box;
+}
+
+.d-stage-label {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: "Cossette Texte", sans-serif;
+  color: #000;
+  z-index: 10;
+  transform: scale(var(--inv-sx, 1), var(--inv-sy, 1));
+  transform-origin: top left;
+}
+
+.d-stage-label--light,
+.d-stage-label--light p,
+.d-stage-label--light .d-stage-title,
+.d-stage-label--light .d-stage-sub {
+  color: #fff;
+}
+
+.d-stage-title {
+  font-size: 20px;
+  line-height: normal;
+}
+
+.d-stage-sub {
+  font-size: 16px;
+  line-height: normal;
+}
+
+.d-stage-sub p {
+  font-size: 16px;
+  line-height: normal;
+}
+
+.d-vector {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.d-vector > img,
+.d-asset-bleed > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+
+.d-asset-bleed {
+  position: absolute;
+}
+
+.d-arrow {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.diagram-asset {
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.d-vector.is-dimmed,
+.d-arrow.is-dimmed {
+  filter: grayscale(1);
+  opacity: 0.35;
+}
+
+.diagram-asset.is-dimmed {
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.diagram-asset.is-active {
+  filter: none;
+  opacity: 1;
+  z-index: 2;
+}
+
+.d-box,
+.d-stage-label,
+.d-rel,
+.d-rel-wrap,
+.d-note,
+.d-flow {
+  pointer-events: none;
+  z-index: 10;
+}
+
+.d-arrow--flat {
+  height: 0;
+}
+
+.d-arrow-rot {
+  flex: none;
+}
+
+.d-arrow-line {
+  position: relative;
+  height: 0;
+}
+
+.d-box {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #000;
+  font-family: "Cossette Texte", sans-serif;
+  font-size: 20px;
+  line-height: normal;
+  color: #000;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.d-box span {
+  display: inline-block;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  transform: scale(var(--inv-sx, 1), var(--inv-sy, 1));
+  transform-origin: center center;
+}
+
+.d-box--invert {
+  background: #000;
+  color: #fff;
+}
+
+.d-box--dashed {
+  border-style: dashed;
+  border-radius: 100px;
+}
+
+.d-rel {
+  position: absolute;
+  z-index: 10;
+  transform: translateX(-50%) scale(var(--inv-sx, 1), var(--inv-sy, 1));
+  transform-origin: center center;
+  font-family: Inter, "Cossette Texte", sans-serif;
+  font-size: 12px;
+  font-style: italic;
+  line-height: normal;
+  color: #000;
+  text-align: center;
+  white-space: nowrap;
+  margin: 0;
+  pointer-events: none;
+}
+
+.d-rel-wrap {
+  position: absolute;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.d-rel-wrap .d-rel {
+  position: static;
+  margin: 0;
+  transform: scale(var(--inv-sx, 1), var(--inv-sy, 1));
+  transform-origin: center center;
+}
+
+.d-rel-wrap .d-rel--rot,
+.d-rel-wrap .d-rel--stack {
+  transform-origin: center center;
+}
+
+.d-rel--stack {
+  font-family: Inter, "Cossette Texte", sans-serif;
+  font-size: 12px;
+  font-style: italic;
+  line-height: normal;
+  color: #000;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.d-rel--stack p {
+  font-family: inherit;
+  font-size: inherit;
+  font-style: inherit;
+  line-height: normal;
+  margin: 0;
+  color: inherit;
+}
+
+.d-flow {
+  position: absolute;
+  z-index: 10;
+  transform: translateX(-50%) scale(var(--inv-sx, 1), var(--inv-sy, 1));
+  transform-origin: center center;
+  font-family: "Cossette Texte", sans-serif;
+  font-size: 20px;
+  color: #ff00f3;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.d-note {
+  position: absolute;
+  z-index: 10;
+  font-family: "Cossette Texte", sans-serif;
+  font-size: 8px;
+  line-height: normal;
+  color: #000;
+  white-space: nowrap;
+  transform: scale(var(--inv-sx, 1), var(--inv-sy, 1));
+  transform-origin: top left;
+  pointer-events: none;
+}
+
+.d-note p {
+  font-size: 8px;
+  line-height: normal;
+  margin: 0;
+}
+
+.d-note--pink {
+  color: #ff00f3;
+}
+
+.d-note--light {
+  color: #fff;
 }
 
 .analysis_container {
