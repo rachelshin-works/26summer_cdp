@@ -110,9 +110,21 @@ a {
 
 .d-band {
   position: absolute;
-  pointer-events: none;
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 0;
   border-top: 1px solid #000;
   box-sizing: border-box;
+}
+
+.d-band.is-dimmed {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.d-band.is-active {
+  filter: none;
+  opacity: 1;
 }
 
 .d-stage-label {
@@ -125,6 +137,8 @@ a {
   z-index: 10;
   transform: scale(var(--inv-sx, 1), var(--inv-sy, 1));
   transform-origin: top left;
+  pointer-events: auto;
+  cursor: pointer;
 }
 
 .d-stage-label--light,
@@ -183,7 +197,13 @@ a {
 }
 
 .d-vector.is-dimmed,
-.d-arrow.is-dimmed {
+.d-arrow.is-dimmed,
+.d-box.is-dimmed,
+.d-stage-label.is-dimmed,
+.d-rel.is-dimmed,
+.d-rel-wrap.is-dimmed,
+.d-note.is-dimmed,
+.d-flow.is-dimmed {
   filter: grayscale(1);
   opacity: 0.35;
 }
@@ -193,14 +213,22 @@ a {
   cursor: pointer;
 }
 
-.diagram-asset.is-active {
+.diagram-asset.is-active,
+.d-box.is-active,
+.d-stage-label.is-active,
+.d-rel.is-active,
+.d-rel-wrap.is-active,
+.d-note.is-active,
+.d-flow.is-active {
   filter: none;
   opacity: 1;
+}
+
+.diagram-asset.is-active {
   z-index: 2;
 }
 
 .d-box,
-.d-stage-label,
 .d-rel,
 .d-rel-wrap,
 .d-note,

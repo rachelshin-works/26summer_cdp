@@ -205,6 +205,7 @@ const DIAGRAM_SETS = {
     "vector5",
     "vector6",
     "vector10",
+    "vector11",
     "vector12",
     "arrow42",
     "arrow43",
@@ -216,23 +217,38 @@ const DIAGRAM_SETS = {
     "arrow30",
     "arrow31",
     "arrow32",
+    "arrow34",
+    "arrow35",
     "arrow45",
     "arrow46",
   ],
-  3: [
-    "vector8",
-    "arrow36",
-    "arrow38",
-    "arrow39",
-    "arrow34",
-    "arrow35",
-  ],
-  4: ["arrow33", "arrow40", "arrow41", "arrow48"],
+  3: ["vector8", "arrow36", "arrow38", "arrow39"],
+  4: ["vector9", "arrow33", "arrow40", "arrow41", "arrow48"],
 };
 
 function assetNameFromSrc(src) {
   const match = src.match(/(vector\d+|arrow\d+)/i);
   return match ? match[1].toLowerCase() : null;
+}
+
+function parsePx(value) {
+  const n = parseFloat(value);
+  return Number.isFinite(n) ? n : 0;
+}
+
+function elementStageRect(el) {
+  return {
+    left: el.offsetLeft,
+    top: el.offsetTop,
+    width: el.offsetWidth || parsePx(el.style.width),
+    height: el.offsetHeight || parsePx(el.style.height),
+  };
+}
+
+function elementInBand(el, band) {
+  const rect = elementStageRect(el);
+  const cy = rect.top + Math.max(rect.height, 1) / 2;
+  return cy >= band.top && cy < band.bottom;
 }
 
 function initDiagramSets() {
@@ -267,13 +283,54 @@ function initDiagramSets() {
     });
   });
 
+  const bands = [...stage.querySelectorAll(".d-band")].map((el, index) => {
+    const top = parsePx(el.style.top);
+    const height = parsePx(el.style.height);
+    el.dataset.band = String(index);
+    el.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleDiagramBand(index);
+    });
+    return { el, index, top, bottom: top + height };
+  });
+
+  const labels = [...stage.querySelectorAll(".d-stage-label")];
+  labels.forEach((label, index) => {
+    label.dataset.band = String(index);
+    label.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleDiagramBand(index);
+    });
+  });
+
+  const textEls = [
+    ...stage.querySelectorAll(
+      ".d-box, .d-rel-wrap, .d-note, .d-flow, .d-stage-label",
+    ),
+    ...[...stage.querySelectorAll(".d-rel")].filter(
+      (el) => !el.closest(".d-rel-wrap"),
+    ),
+  ];
+
   let activeSet = null;
+  let activeBand = null;
+
+  function clearDimClasses(el) {
+    el.classList.remove("is-dimmed", "is-active");
+  }
+
+  function clearAllHighlights() {
+    wraps.forEach(clearDimClasses);
+    bands.forEach(({ el }) => clearDimClasses(el));
+    textEls.forEach(clearDimClasses);
+  }
 
   function applyDiagramSet(nextSet) {
+    clearAllHighlights();
+    if (!nextSet) return;
+
     wraps.forEach((wrap) => {
       const setId = wrap.dataset.set;
-      wrap.classList.remove("is-dimmed", "is-active");
-      if (!nextSet) return;
       if (setId === nextSet) {
         wrap.classList.add("is-active");
       } else {
@@ -282,17 +339,56 @@ function initDiagramSets() {
     });
   }
 
+  function applyDiagramBand(nextBand) {
+    clearAllHighlights();
+    if (nextBand == null) return;
+
+    const band = bands[nextBand];
+    if (!band) return;
+
+    bands.forEach(({ el, index }) => {
+      el.classList.toggle("is-active", index === nextBand);
+      el.classList.toggle("is-dimmed", index !== nextBand);
+    });
+
+    wraps.forEach((wrap) => {
+      if (elementInBand(wrap, band)) {
+        wrap.classList.add("is-active");
+      } else {
+        wrap.classList.add("is-dimmed");
+      }
+    });
+
+    textEls.forEach((el) => {
+      if (elementInBand(el, band)) {
+        el.classList.add("is-active");
+      } else {
+        el.classList.add("is-dimmed");
+      }
+    });
+  }
+
   function toggleDiagramSet(setId) {
+    activeBand = null;
     activeSet = activeSet === setId ? null : setId;
-    applyDiagramSet(activeSet);
+    if (activeSet) applyDiagramSet(activeSet);
+    else clearAllHighlights();
   }
 
-  function clearDiagramSet() {
+  function toggleDiagramBand(bandIndex) {
     activeSet = null;
-    applyDiagramSet(null);
+    activeBand = activeBand === bandIndex ? null : bandIndex;
+    if (activeBand != null) applyDiagramBand(activeBand);
+    else clearAllHighlights();
   }
 
-  stage.addEventListener("click", () => clearDiagramSet());
+  function clearDiagramSelection() {
+    activeSet = null;
+    activeBand = null;
+    clearAllHighlights();
+  }
+
+  stage.addEventListener("click", () => clearDiagramSelection());
 }
 
 if (document.querySelector(".diagram-stage")) {
