@@ -142,6 +142,7 @@ if (document.getElementById("by-author-links")) {
 function fitDiagram() {
   const container = document.querySelector(".diagram_container");
   const title = document.querySelector(".diagram-title");
+  const analysis = document.querySelector(".diagram-analysis");
   const fit = document.querySelector(".diagram-fit");
   const stage = document.querySelector(".diagram-stage");
   if (!container || !fit || !stage) return;
@@ -154,16 +155,20 @@ function fitDiagram() {
   const width = container.clientWidth;
   if (width < 50) return;
 
-  let usedAbove = 0;
-  if (title) {
-    const titleStyle = getComputedStyle(title);
-    usedAbove =
-      title.offsetHeight +
-      (parseFloat(titleStyle.marginTop) || 0) +
-      (parseFloat(titleStyle.marginBottom) || 0);
-  }
+  const measureBlock = (el) => {
+    if (!el) return 0;
+    const style = getComputedStyle(el);
+    return (
+      el.offsetHeight +
+      (parseFloat(style.marginTop) || 0) +
+      (parseFloat(style.marginBottom) || 0)
+    );
+  };
 
-  const availableHeight = Math.max(container.clientHeight - usedAbove, 50);
+  const usedAbove = measureBlock(title) + measureBlock(analysis);
+  const remaining = container.clientHeight - usedAbove;
+  const heightFromWidth = contentHeight * (width / designWidth);
+  const availableHeight = Math.max(remaining, heightFromWidth, 50);
   const scaleX = width / designWidth;
   const scaleY = availableHeight / contentHeight;
 
@@ -174,7 +179,8 @@ function fitDiagram() {
 
   const indicator = document.querySelector(".diagram-indicator");
   if (indicator) {
-    const rootFont = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const rootFont =
+      parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     const baseWidth = 12 * rootFont;
     indicator.style.width = `${baseWidth * Math.min(scaleX, 1)}px`;
   }
@@ -196,6 +202,47 @@ function fitDiagram() {
     }
     el.style.transform = `scale(${invSx}, ${invSy}) rotate(${el.dataset.rot})`;
   });
+}
+
+function renderDiagramAnalysis(text) {
+  const container = document.getElementById("diagram-analysis");
+  if (!container || !text) return;
+
+  const blocks = text
+    .replace(/\r\n/g, "\n")
+    .trim()
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
+  container.innerHTML = blocks
+    .map((block) => {
+      const lines = block
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean);
+      const listItems = lines.filter((line) => /^\d+\.\s/.test(line));
+
+      if (listItems.length && listItems.length === lines.length) {
+        const items = listItems
+          .map((line) => `<li>${line.replace(/^\d+\.\s*/, "")}</li>`)
+          .join("");
+        return `<ol>${items}</ol>`;
+      }
+
+      if (listItems.length && listItems.length < lines.length) {
+        const intro = lines
+          .filter((line) => !/^\d+\.\s/.test(line))
+          .join(" ");
+        const items = listItems
+          .map((line) => `<li>${line.replace(/^\d+\.\s*/, "")}</li>`)
+          .join("");
+        return `<p>${intro}</p><ol>${items}</ol>`;
+      }
+
+      return `<p>${lines.join(" ")}</p>`;
+    })
+    .join("");
 }
 
 const DIAGRAM_SETS = {
@@ -395,13 +442,31 @@ if (document.querySelector(".diagram-stage")) {
   const container = document.querySelector(".diagram_container");
   const runFit = () => requestAnimationFrame(fitDiagram);
 
-  runFit();
+  const bootDiagram = () => {
+    runFit();
+    initDiagramSets();
+  };
+
+  const analysisEl = document.getElementById("diagram-analysis");
+  if (analysisEl) {
+    fetch("final_analysis.txt")
+      .then((res) => res.text())
+      .then((text) => {
+        renderDiagramAnalysis(text);
+        bootDiagram();
+      })
+      .catch((err) => {
+        console.error("final_analysis loading error:", err);
+        bootDiagram();
+      });
+  } else {
+    bootDiagram();
+  }
+
   window.addEventListener("load", runFit);
   window.addEventListener("resize", runFit);
 
   if (container && typeof ResizeObserver !== "undefined") {
     new ResizeObserver(runFit).observe(container);
   }
-
-  initDiagramSets();
 }

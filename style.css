@@ -61,7 +61,8 @@ a {
   flex: 1 1 0;
   min-width: 0;
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: #fff;
   display: flex;
   flex-direction: column;
@@ -78,6 +79,37 @@ a {
   margin-bottom: 0;
   position: relative;
   z-index: 1;
+}
+
+.diagram-analysis {
+  flex-shrink: 0;
+  width: calc(100% - 3rem);
+  margin: 1.25rem 3rem 1.5rem 0;
+  font-family: "Cossette Texte", sans-serif;
+  color: #000;
+}
+
+.diagram-analysis p,
+.diagram-analysis li {
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: inherit;
+  margin: 0 0 0.9rem;
+}
+
+.diagram-analysis p:last-child,
+.diagram-analysis ol:last-child {
+  margin-bottom: 0;
+}
+
+.diagram-analysis ol {
+  margin: 0 0 0.9rem;
+  padding-left: 1.25rem;
+}
+
+.diagram-analysis li {
+  margin-bottom: 0.35rem;
 }
 
 .diagram-fit {
